@@ -4,6 +4,9 @@ import os.path
 from Colors import Colors
 from datetime import date
 import time
+from PIL import Image
+from StringIO import StringIO
+import threading
 
 
 class DeckImport:
@@ -12,9 +15,8 @@ class DeckImport:
     values = []
 
     def writeImage(self, path, content):
-        img = open(path, "w")
-
-        img.write(content)
+        img = Image.open(StringIO(content))
+        img.save(path)
 
     def updateCsv(self):
         csvName = 'C:/Users/Nick/downloads/decks-new.csv'
@@ -43,8 +45,6 @@ class DeckImport:
         for row in rows:
             splitRow = row.split(',')
 
-            orderNum = splitRow[0]
-
             # Splitting adds newline at the end so the regex removes it
             deckUrl = re.sub(r'[\n]', '', splitRow[1])
 
@@ -59,14 +59,20 @@ class DeckImport:
             fileName = '/' + str(date.today()) + '-' + \
                 re.sub(r'[.]', '-', str(time.time())) + '.png'
 
+            # Pair the full path with unique file name
             path = output + fileName
 
-            self.writeImage(path, response.content)
+            # Formatting arguments for thread
+            args = [path, response.content]
 
+            # Start a thread to be async
+            threading.Thread(target=self.writeImage, args=(args)).start()
+
+            # Store the updated row
             splitRow[1] = path
-
             self.values.append(splitRow)
 
+            # Reflect how many images have been successful
             count += 1
 
         print(Colors.GREEN + str(count) + " images were stored." + Colors.RESET)
