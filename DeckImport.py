@@ -1,28 +1,19 @@
 import requests
 import re
 import os.path
+from Colors import Colors
+from datetime import date
+import time
 
 class DeckImport:
+
+    def writeImage(self, path, content):        
+        img = open(path, "w")
+        
+        img.write(content)
+
+
     def __init__(self, input, output):
-
-        # Verify csv exists
-        srcExists = os.path.isfile(input)
-
-        # Handle non existent csv
-        if(not srcExists):
-            print("CSV could not be found.")
-            print("Path: " + input + "")
-            exit()
-
-        # Verify output dir exists
-        dirExists = os.path.isdir(output)
-
-        # Handle non existent output dir
-        if(not dirExists):
-            print("Output directory could not be found.")
-            print("Path: " + output + "")
-            exit()
-
 
         # Get file object
         srcFile = open(input, "r")
@@ -42,16 +33,15 @@ class DeckImport:
             # Splitting adds newline at the end so the regex removes it
             deckUrl = re.sub(r'[\n]', '', splitRow[1])
         
+            # Send request
             response = requests.get(deckUrl)
 
-            print(response)
+            # Create unique filename based on date and time
+            fileName = '/' + str(date.today()) + '-' + re.sub(r'[.]', '-', str(time.time())) + '.png'
 
-            # Save image to output path
-            newPath = output + '/' + orderNum + '.png'
+            path = output + fileName
 
-            newImg = open(newPath, "w")
-
-            newImg.write(response.content)
+            self.writeImage(path, response.content)     
 
         srcFile.close()
 
