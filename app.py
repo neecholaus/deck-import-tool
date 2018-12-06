@@ -13,7 +13,7 @@ output = None
 
 # Handle lack of input
 if(len(args) < 3):
-    print(Colors.RED + "Invalid number of arguments." + Colors.RESET)
+    print(Colors.EX + " Invalid number of arguments.")
     exit()
 
 input = args[1]
@@ -25,7 +25,7 @@ srcExists = os.path.isfile(input)
 
 # Handle non existent csv
 if(not srcExists):
-    print(Colors.RED + "CSV could not be found." + Colors.RESET)
+    print(Colors.EX + " CSV could not be found.")
     print("Path: " + input + "")
     exit()
 
@@ -34,8 +34,16 @@ dirExists = os.path.isdir(output)
 
 # Handle non existent output dir
 if(not dirExists):
-    print(Colors.RED + "Output directory could not be found." + Colors.RESET)
-    print("Path: " + output + "")
-    exit()
+    print(Colors.WARNING + " Output directory could not be found so it will be created.")
+    print(Colors.WARNING + " Output Path: " + output)
+
+    # Make output dir
+    try:
+        os.makedirs(output)
+    except:
+        print(Colors.EX + "Output directory could not be created.")
+        exit()
 
 DeckImport(input, output)
+
+

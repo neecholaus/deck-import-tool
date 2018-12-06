@@ -27,6 +27,8 @@ class DeckImport:
             string = ','.join(item) + '\n'
             newFile.write(string)
 
+        newFile.close()
+
     def __init__(self, input, output):
 
         # Get file object
@@ -50,11 +52,11 @@ class DeckImport:
             try:
                 response = requests.get(deckUrl)
             except:
-                print(Colors.RED + "400 Bad Request: " + deckUrl + Colors.RESET)
+                print(Colors.EX + " 400 Bad Request: " + deckUrl)
                 continue
 
             if(response.status_code != 200):
-                print(Colors.RED + "404 Not Found: " + deckUrl + Colors.RESET)
+                print(Colors.EX + " 404 Not Found: " + deckUrl)
                 continue
 
             # Create unique filename based on date and time
@@ -77,8 +79,14 @@ class DeckImport:
             # Reflect how many images have been successful
             count += 1
 
-        print(Colors.GREEN + str(count) + " images were stored." + Colors.RESET)
+        responseColor = Colors.CHECK if count > 0 else Colors.EX
 
+        print(responseColor + " Storing " + str(count) + " images.")
+
+        # Update input CSV with local file paths
         self.updateCsv(input)
-
         srcFile.close()
+
+        print(Colors.GREEN + u'\u2713' + Colors.RESET + " CSV file paths have been updated.")
+
+        print(Colors.WARNING + " Finishing up...")
