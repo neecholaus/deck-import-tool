@@ -18,10 +18,8 @@ class DeckImport:
         img = Image.open(StringIO(content))
         img.save(path)
 
-    def updateCsv(self):
-        csvName = 'C:/Users/Nick/downloads/decks-new.csv'
-
-        newFile = open(csvName, "w")
+    def updateCsv(self, path):
+        newFile = open(path, "w")
 
         newFile.write(self.properties)
 
@@ -49,10 +47,14 @@ class DeckImport:
             deckUrl = re.sub(r'[\n]', '', splitRow[1])
 
             # Send request
-            response = requests.get(deckUrl)
+            try:
+                response = requests.get(deckUrl)
+            except:
+                print(Colors.RED + "400 Bad Request: " + deckUrl + Colors.RESET)
+                continue
 
             if(response.status_code != 200):
-                print(Colors.RED + "404 not found: " + deckUrl + Colors.RESET)
+                print(Colors.RED + "404 Not Found: " + deckUrl + Colors.RESET)
                 continue
 
             # Create unique filename based on date and time
@@ -77,6 +79,6 @@ class DeckImport:
 
         print(Colors.GREEN + str(count) + " images were stored." + Colors.RESET)
 
-        self.updateCsv()
+        self.updateCsv(input)
 
         srcFile.close()
