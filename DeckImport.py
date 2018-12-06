@@ -7,10 +7,24 @@ import time
 
 class DeckImport:
 
+    properties = None
+    values = []
+
     def writeImage(self, path, content):        
         img = open(path, "w")
         
         img.write(content)
+
+    def updateCsv(self):
+        csvName = '/Users/nickneuman/downloads/decks-new.csv'
+
+        newFile = open(csvName, "w")
+
+        newFile.write(self.properties)
+
+        for item in self.values:
+            string = ','.join(item) + '\n'
+            newFile.write(string)
 
 
     def __init__(self, input, output):
@@ -23,7 +37,7 @@ class DeckImport:
 
 
         # Remove and store property names
-        properties = rows.pop(0)
+        self.properties = rows.pop(0)
 
         for row in rows:
             splitRow = row.split(',')
@@ -36,12 +50,23 @@ class DeckImport:
             # Send request
             response = requests.get(deckUrl)
 
+            if(response.status_code != 200):
+                # didn't get photo
+                # skip for now
+                continue
+
             # Create unique filename based on date and time
             fileName = '/' + str(date.today()) + '-' + re.sub(r'[.]', '-', str(time.time())) + '.png'
 
             path = output + fileName
 
-            self.writeImage(path, response.content)     
+            self.writeImage(path, response.content)
+
+            splitRow[1] = path
+
+            self.values.append(splitRow)
+
+        self.updateCsv()
 
         srcFile.close()
 
