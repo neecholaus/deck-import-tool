@@ -4,6 +4,9 @@
 ```bash
 git clone https://father_nicolai@bitbucket.org/father_nicolai/deck-import-tool.git
 ```
+```bash
+pip install -r requirements.txt
+```
 
 ##### The entry point is:
 ```
