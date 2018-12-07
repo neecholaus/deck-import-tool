@@ -31,6 +31,9 @@ class DeckImport:
 
     def __init__(self, input, output):
 
+        if(not input or not output):
+            return
+
         # Get file object
         srcFile = open(input, "r")
 
@@ -52,11 +55,11 @@ class DeckImport:
             try:
                 response = requests.get(deckUrl)
             except:
-                print(Colors.EX + " 400 Bad Request: " + deckUrl)
+                print("400 Bad Request: " + deckUrl)
                 continue
 
             if(response.status_code != 200):
-                print(Colors.EX + " 404 Not Found: " + deckUrl)
+                print("404 Not Found: " + deckUrl)
                 continue
 
             # Create unique filename based on date and time
@@ -79,14 +82,12 @@ class DeckImport:
             # Reflect how many images have been successful
             count += 1
 
-        responseColor = Colors.CHECK if count > 0 else Colors.EX
-
-        print(responseColor + " Storing " + str(count) + " images.")
+        print("Storing " + str(count) + " images.")
 
         # Update input CSV with local file paths
         self.updateCsv(input)
         srcFile.close()
 
-        print(Colors.GREEN + u'\u2713' + Colors.RESET + " CSV file paths have been updated.")
+        print("CSV file paths have been updated.")
 
-        print(Colors.WARNING + " Finishing up...")
+        print("Finishing up...")
