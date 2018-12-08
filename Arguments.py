@@ -20,8 +20,8 @@ class Arguments:
             try:
                 os.makedirs(output)
             except:
-                print("Output directory could not be created.")
-                print(output)
+                # print("Output directory could not be created.")
+                # print(output)
                 return False
 
         return True
