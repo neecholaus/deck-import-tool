@@ -5,7 +5,6 @@ import re
 from datetime import date
 import time
 from Arguments import Arguments
-from DeckImport import DeckImport
 from Colors import Colors
 from Tkinter import *
 from tkFileDialog import *
@@ -101,11 +100,11 @@ class Tool:
         try:
             response = requests.get(url)
         except:
-            self.appendToLog("400 Bad Request: " + url)
+            self.appendToLog("400 Bad Request: " + url, "red")
             self.imageCount -= 1
             return False
         if(response.status_code != 200):
-            self.appendToLog("404 Not Found: " + url)
+            self.appendToLog("404 Not Found: " + url, "red")
             self.imageCount -= 1
             return False
 
@@ -164,10 +163,15 @@ class Tool:
     """
     Enter text to be displayed in the log
     """
-    def appendToLog(self, string):
+    def appendToLog(self, string, color="black", r=True):
+        if(r):
+            self.appendToLog(color, "black", False)
+        
+        self.logText.tag_add(color, "linestart", "lineend")
+        self.logText.tag_config(color, foreground=color)
         self.logText.insert(END, string + "\n\n")
         self.window.update()
-        self.logText.see("end")
+        self.logText.see("end")    
 
 
     """
