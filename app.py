@@ -4,9 +4,7 @@ import requests
 import re
 from datetime import date
 import time
-from Arguments import Arguments
-from DeckImport import DeckImport
-from Colors import Colors
+from PathHandler import PathHandler
 from Tkinter import *
 from tkFileDialog import *
 from PIL import Image
@@ -21,7 +19,7 @@ class Tool:
     """
     def promptInput(self, event=None):        
         input = askopenfilename(initialdir="/", title="Select file", filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
-        if(Arguments.validateInput(input)):
+        if(PathHandler.validateInput(input)):
             self.inputElement.delete(0, END)
             self.inputElement.insert(0, input)
             self.appendToLog("CSV path is valid.")
@@ -35,8 +33,8 @@ class Tool:
     """
     def promptOutput(self, event=None):
         output = askdirectory()
-        if(Arguments.validateOutput(output)):
-            self.outputElement.delete(0, END)      
+        if(PathHandler.validateOutput(output)):
+            self.outputElement.delete(0, END)
             self.outputElement.insert(0, output)
             self.appendToLog("Output path has been found.")
             self.output = output
@@ -75,7 +73,7 @@ class Tool:
         self.finishedImages += 1
 
         if(self.finishedImages >= self.imageCount):
-            self.appendToLog("Done.")
+            self.appendToLog("Done.", "green")
 
 
     """
@@ -101,11 +99,11 @@ class Tool:
         try:
             response = requests.get(url)
         except:
-            self.appendToLog("400 Bad Request: " + url)
+            self.appendToLog("400 Bad Request: " + url, "red")
             self.imageCount -= 1
             return False
         if(response.status_code != 200):
-            self.appendToLog("404 Not Found: " + url)
+            self.appendToLog("404 Not Found: " + url, "red")
             self.imageCount -= 1
             return False
 
@@ -116,6 +114,8 @@ class Tool:
     Parse csv, download files, update csv
     """
     def fetch(self):
+        self.appendToLog("Fetching images...")
+
         rows = self.parseInput(self.input)
 
         self.imageCount = len(rows)
@@ -132,6 +132,7 @@ class Tool:
             # Send request
             response = self._request(deckUrl)
             if(not response):
+                Count -= 1
                 continue
 
             # Tell user if successful and show order number
@@ -143,7 +144,7 @@ class Tool:
             # Pair the full path with unique file name
             path = self.output + fileName
 
-            # Formatting arguments for thread
+            # Formatting PathHandler for thread
             args = [path, response, Count]
 
             # Start a thread to be async
@@ -151,21 +152,40 @@ class Tool:
 
             # Store the updated row
             splitRow[1] = path
-            self.values.append(splitRow)
-
-        self.appendToLog("Storing " + str(Count) + " images.")
+            self.values.append(splitRow)        
 
         # Update input CSV with local file paths
-        self.updateCsv(self.input)
-
-        self.appendToLog("Parsing images...")
+        if(Count > 0):
+            self.appendToLog("Storing " + str(Count) + " images.")
+            self.updateCsv(self.input)
+            self.appendToLog("Parsing images...")        
+        else:
+            self.appendToLog("No images were found.")
+            self.appendToLog("Done", "green")
 
 
     """
     Enter text to be displayed in the log
     """
-    def appendToLog(self, string):
-        self.logText.insert(END, string + "\n\n")
+    def appendToLog(self, string, color="white"):
+        # Place cursor at the end
+        self.logText.see(END)
+
+        endIndex = self.logText.index("end-1c linestart")
+        
+        # Log given text
+        if(color == "green"):
+            string = u"\u2714" + " " + string
+
+        self.logText.insert(END, string)
+
+        # Begin tag
+        self.logText.tag_add(color, endIndex, endIndex + "+ " + str(len(string)) + " chars")
+        self.logText.tag_config(color, foreground=color)
+
+        # Add newlines
+        self.logText.insert(END, "\n\n")
+
         self.window.update()
         self.logText.see("end")
 
@@ -227,7 +247,7 @@ class Tool:
         self.outputElement.bind("<Button-1>", self.promptOutput)
 
         # Log
-        self.logText = Text(self.window, relief=SUNKEN, bg="#e3e3e3", height=10, width=50)
+        self.logText = Text(self.window, relief=SUNKEN, bg="black", height=10, width=50)
         self.logText.pack(fill=X, padx=10, pady=(30, 10))
 
         # Commands
