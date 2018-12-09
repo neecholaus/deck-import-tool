@@ -1,25 +1,17 @@
 ## Custom Deck Importer
 
+Last tested with Python v2.7.15
+
 ##### Run:
 ```bash
 git clone https://father_nicolai@bitbucket.org/father_nicolai/deck-import-tool.git
 ```
 ```bash
+cd deck-import-tool
+```
+```bash
 pip install -r requirements.txt
 ```
-
-##### The entry point is:
-```
-./app.py
-```
-
-##### There are two required parameters when running via the terminal:
-```
-Input Path  - Where to find the csv
-Output Path - Where to store the images
-```
-
-##### Example:
 ```bash
-python app.py ~/downloads/decks.csv ~/downloads/custom-decks
+python app.py
 ```

@@ -222,20 +222,20 @@ class Tool:
 
         # Input
         self.inputFrame = Frame(self.window)
-        self.inputLabel = Label(self.inputFrame, text="CSV Path:", width=12, anchor="e", font=("Helvetica 12"))
+        self.inputLabel = Label(self.inputFrame, text="CSV Path:", width=15, anchor="e", font=("Helvetica 11"))
         self.inputBtn = Button(self.inputFrame, text="Find", command=self.promptInput)
         self.inputElement = Entry(self.inputFrame, width=50)
 
         # Input Pack
         self.inputFrame.pack(fill=X)
-        self.inputLabel.pack(side=LEFT, padx=(50, 0), pady=5)
+        self.inputLabel.pack(side=LEFT, padx=(40, 0), pady=5)
         self.inputBtn.pack(side=RIGHT, padx=(5, 30))
         self.inputElement.pack(side=RIGHT, padx=(20, 0), pady=5)
         self.inputElement.bind("<Button-1>", self.promptInput)
 
         # Output
         self.outputFrame = Frame(self.window)
-        self.outputLabel = Label(self.outputFrame, text="Image Destination:", width=15, anchor="e", font=("Helvetica 12"))
+        self.outputLabel = Label(self.outputFrame, text="Image Destination:", width=15, anchor="e", font=("Helvetica 11"))
         self.outputBtn = Button(self.outputFrame, text="Find", command=self.promptOutput)
         self.outputElement = Entry(self.outputFrame, width=50)
 
