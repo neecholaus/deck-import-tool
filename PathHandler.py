@@ -1,11 +1,7 @@
 import os.path
-from Colors import Colors
 
 
-class Arguments:
-    def __init__(self, input, output):
-        print("")
-
+class PathHandler:
     @staticmethod
     def validateInput(input):
         srcExists = os.path.isfile(input)
@@ -20,8 +16,6 @@ class Arguments:
             try:
                 os.makedirs(output)
             except:
-                # print("Output directory could not be created.")
-                # print(output)
                 return False
 
         return True
