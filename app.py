@@ -10,6 +10,7 @@ from tkFileDialog import *
 from PIL import Image
 from StringIO import StringIO
 import threading
+import string
 
 
 class Tool:
@@ -151,7 +152,7 @@ class Tool:
             threading.Thread(target=self.writeImage, args=(args)).start()
 
             # Store the updated row
-            splitRow[1] = path
+            splitRow[1] = string.replace(path, '/', '\\')
             self.values.append(splitRow)        
 
         # Update input CSV with local file paths
