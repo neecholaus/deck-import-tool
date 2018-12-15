@@ -97,6 +97,8 @@ class Tool:
     Make request and handle response
     """
     def _request(self, url):
+        # Handle url's pointing to shop. and force the cdn. path
+        url = string.replace(url, 'shop.', 'cdn.')
         try:
             response = requests.get(url)
         except:
@@ -140,10 +142,10 @@ class Tool:
             self.appendToLog("File found: " + splitRow[0])
 
             # Create unique filename based on date and time
-            fileName = '/' + str(date.today()) + '-' + re.sub(r'[.]', '-', str(time.time())) + '.png'
+            fileName = str(date.today()) + '-' + re.sub(r'[.]', '-', str(time.time())) + '.png'
 
             # Pair the full path with unique file name
-            path = self.output + fileName
+            path = os.path.join(os.path.dirname(os.path.abspath(self.input)), fileName)
 
             # Formatting PathHandler for thread
             args = [path, response, Count]
@@ -152,14 +154,15 @@ class Tool:
             threading.Thread(target=self.writeImage, args=(args)).start()
 
             # Store the updated row
-            splitRow[1] = string.replace(path, '/', '\\')
-            self.values.append(splitRow)        
+            splitRow[1] = fileName
+            
+            self.values.append(splitRow)
 
         # Update input CSV with local file paths
         if(Count > 0):
             self.appendToLog("Storing " + str(Count) + " images.")
             self.updateCsv(self.input)
-            self.appendToLog("Parsing images...")        
+            self.appendToLog("Parsing images...")
         else:
             self.appendToLog("No images were found.")
             self.appendToLog("Done", "green")
@@ -233,19 +236,6 @@ class Tool:
         self.inputBtn.pack(side=RIGHT, padx=(5, 30))
         self.inputElement.pack(side=RIGHT, padx=(20, 0), pady=5)
         self.inputElement.bind("<Button-1>", self.promptInput)
-
-        # Output
-        self.outputFrame = Frame(self.window)
-        self.outputLabel = Label(self.outputFrame, text="Image Destination:", width=15, anchor="e", font=("Helvetica 11"))
-        self.outputBtn = Button(self.outputFrame, text="Find", command=self.promptOutput)
-        self.outputElement = Entry(self.outputFrame, width=50)
-
-        # Output Pack
-        self.outputFrame.pack(fill=X)
-        self.outputLabel.pack(side=LEFT, padx=(40, 0), pady=5)
-        self.outputBtn.pack(side=RIGHT, padx=(5, 30))
-        self.outputElement.pack(side=RIGHT, padx=(20, 0), pady=5)
-        self.outputElement.bind("<Button-1>", self.promptOutput)
 
         # Log
         self.logText = Text(self.window, relief=SUNKEN, bg="black", height=10, width=50)
