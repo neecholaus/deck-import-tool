@@ -4,7 +4,7 @@ Last tested with Python v2.7.15
 
 ##### Run:
 ```bash
-git clone https://father_nicolai@bitbucket.org/father_nicolai/deck-import-tool.git
+git clone https://github.com/neecholaus/deck-import-tool.git
 ```
 ```bash
 cd deck-import-tool
